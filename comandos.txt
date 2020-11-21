@@ -1,0 +1,34 @@
+node -v
+npm install -g create-react-app
+npx create-react-app #nombre de la app
+#entrar en la carpeta
+npm start
+npm install --save firebase
+
+///////////////
+en src -> index.js
+import firebase from 'firebase';
+firebase.initializeApp({
+#Aqui va lo de la pagina de firebase
+});
+
+
+
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+
+*************************
+npm i redux react-redux
+npm i bootstrap
+npm i jquery
+npm i redux-thunk
+npm i axios
+
+//////////////////////
+instalar redux-devtools-extension y redux developer tools
+src -> redux -> store.js pegar
+npm install --save redux-devtools-extension

@@ -1,0 +1,4 @@
+npm i -g yarn
+
+npx create-react-app #nombre_archivo
+
