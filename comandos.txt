@@ -4,7 +4,8 @@ npx create-react-app #nombre de la app
 #entrar en la carpeta
 npm start
 npm install --save firebase
-
+npm runtest -> hacer pruebas
+npm eject -> personalizar react
 ///////////////
 en src -> index.js
 import firebase from 'firebase';
