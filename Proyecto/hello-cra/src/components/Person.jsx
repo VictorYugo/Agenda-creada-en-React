@@ -1,9 +1,10 @@
 import React from 'react';
 
-const Person = () => {
+const Person = ({name,age}) => {
+
     return (
         <>
-            <p>I'm a Person</p>
+            <p>Soy {name} y tengo {age} años</p>
         </>
     )
 }
