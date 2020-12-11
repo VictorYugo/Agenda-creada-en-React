@@ -1,37 +1,26 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
+
+import {useHttp} from './hooks/useHttp'
 
 const App = () => {
-  const [date, setDate] = useState(new Date().toLocaleTimeString())
-  
-  useEffect( () => {
-    console.log('Mounted')
-    const time = setInterval(() => setDate(new Date().toLocaleTimeString()),1000)
-    return () => {
-      clearInterval(time);
-    }
-  })
-  
-  const [number,setNumber] = useState(10)
+  const [id, setId] = useState(1)
+  const [post] = useHttp(`https://jsonplaceholder.typicode.com/posts/${id}`)
 
-  const handleIncrement = () => {
-    setNumber(number+1)
+  const handlePrevId = () => {
+    if (id>1) setId(id - 1)
   }
 
-  const handleDecrement = () => {
-    setNumber(number-1)
-  }
-
-  const handleReset = () => {
-    setNumber(0)
+  const handleNextId = () => {
+    setId(id + 1)
   }
 
     return (
       <div>
-        <h1>Hora: {date}</h1>
-        <h1>Number: {number}</h1>
-        <button onClick={handleIncrement}>Increment</button>
-        <button onClick={handleDecrement}>Decrement</button>
-        <button onClick={handleReset}>Reset</button>
+        <h1>{post.title}</h1>
+        <p>{post.body}</p>
+        <button onClick={handlePrevId}>Prev</button>
+        <button onClick={handleNextId}>Next</button>
+        <p>{id}</p>
       </div>
     )
   
