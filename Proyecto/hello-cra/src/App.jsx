@@ -1,30 +1,108 @@
-import React, {useState} from 'react';
+import React, { Component } from 'react';
+import {createGlobalStyle} from 'styled-components';
+import FormTask from './components/FormTask';
+import Task from './components/Task';
+import allColors from './styles/colors';
+import {generate as id} from 'shortid'
 
-import {useHttp} from './hooks/useHttp'
+const GlobalStyle = createGlobalStyle`
+    body{
+        font-family: sans-serif;
+        background-color: #222;
+        color: ${allColors.mainColor};
+        text-align: center;
+        margin: 0;
+    }
+`
 
-const App = () => {
-  const [id, setId] = useState(1)
-  const [post] = useHttp(`https://jsonplaceholder.typicode.com/posts/${id}`)
+class App extends Component {
 
-  const handlePrevId = () => {
-    if (id>1) setId(id - 1)
-  }
+    state = {
+        colorSelected: allColors.colors[0],
+        tasks: [
+            {
+                title: 'Aprender react',
+                color: allColors.colors[0],
+                done: false
+            }
+        ]
+    }
 
-  const handleNextId = () => {
-    setId(id + 1)
-  }
+    handleSubmit = (e) => {
+        e.preventDefault()
+        if(e.target.title.value.trim() !== ''){
+            this.createNewTask(e.target.title.value)
+            e.target.title.value=''
+        }
+    }
 
-    return (
-      <div>
-        <h1>{post.title}</h1>
-        <p>{post.body}</p>
-        <button onClick={handlePrevId}>Prev</button>
-        <button onClick={handleNextId}>Next</button>
-        <p>{id}</p>
-      </div>
-    )
-  
+    createNewTask = (title) => {
+        const newTask = {
+            id: id(),
+            title,
+            color:this.state.colorSelected,
+            done: false
+        }
+        const allTasks = [...this.state.tasks, newTask]
+        this.setState( {tasks: allTasks})
+    }
 
+    getTask = (id) => {
+        const task = this.state.tasks.find(task => task.id === id)
+        return task
+    }
+
+    handleCompleteTask = (id) => {
+        const currentTasks = this.state.tasks
+        const task = this.getTask(id)
+        const index = currentTasks.indexOf(task)
+
+        currentTasks[index].done = !currentTasks[index].done
+
+        this.setState({tasks: currentTasks})
+    }
+
+    handleDeleteTask = (id) => {
+        let currentTasks = this.state.tasks
+        currentTasks = currentTasks.filter(task=>task.id !== id)
+
+        this.setState({tasks:currentTasks})
+        }
+
+    handleChangeColor = (color) => {
+        this.setState({ colorSelected: color})
+    } 
+
+    render() {
+        const {colorSelected, tasks} = this.state
+        return (
+            <div>
+                <GlobalStyle></GlobalStyle>
+                <h1>Compra y venta</h1>
+                <FormTask
+                    handleChangeColor={this.handleChangeColor}
+                    handleSubmit={this.handleSubmit}
+                    colorSelected={colorSelected}
+                ></FormTask>
+                <p>{this.state.colorSelected}</p>
+                {this.state.tasks.length===0 && <p>Not tasks yet</p>}
+                <div>
+                    {
+                        tasks.map(task =>(
+                            <Task
+                                key={id()}
+                                done={task.done}
+                                title={task.title}
+                                color={task.color}
+                                handleCompleteTask={ () => this.handleCompleteTask(task.id) }
+                                handleDeleteTask={ () => this.handleDeleteTask(task.id)}
+                            ></Task>
+                        ))
+                    }
+                </div>
+            </div>
+        );
+    }
 }
 
 export default App;
