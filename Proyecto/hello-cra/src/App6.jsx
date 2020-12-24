@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import {createGlobalStyle} from 'styled-components';
 import FormTask from './components/FormTask';
 import Task from './components/Task';
@@ -15,68 +15,78 @@ const GlobalStyle = createGlobalStyle`
     }
 `
 
-const App = () => {
+class App extends Component {
 
-    const [colorSelected, setColorSelected] = useState(allColors.colors[0])
-    const [tasks, setTasks] = useState([
+    state = {
+        colorSelected: allColors.colors[0],
+        tasks: [
             {
                 title: 'Aprender react',
                 color: allColors.colors[0],
                 done: false
             }
-        ])
+        ]
+    }
 
-    const handleSubmit = (e) => {
+    handleSubmit = (e) => {
         e.preventDefault()
         if(e.target.title.value.trim() !== ''){
-            createNewTask(e.target.title.value)
+            this.createNewTask(e.target.title.value)
             e.target.title.value=''
         }
     }
 
-    const createNewTask = (title) => {
+    createNewTask = (title) => {
         const newTask = {
             id: id(),
             title,
-            color: colorSelected,
+            color:this.state.colorSelected,
             done: false
         }
-        const allTasks = [...tasks, newTask]
-        setTasks( allTasks)
+        const allTasks = [...this.state.tasks, newTask]
+        this.setState( {tasks: allTasks})
     }
 
-    const handleCompleteTask = (id) => {
-        const currentTasks = [...tasks]
-        const task = tasks.find(task => task.id === id)
+    getTask = (id) => {
+        const task = this.state.tasks.find(task => task.id === id)
+        return task
+    }
+
+    handleCompleteTask = (id) => {
+        const currentTasks = this.state.tasks
+        const task = this.getTask(id)
         const index = currentTasks.indexOf(task)
 
         currentTasks[index].done = !currentTasks[index].done
 
-        setTasks(currentTasks)
+        this.setState({tasks: currentTasks})
     }
 
-    const handleDeleteTask = (id) => {
-        let currentTasks = tasks
+    handleDeleteTask = (id) => {
+        let currentTasks = this.state.tasks
         currentTasks = currentTasks.filter(task=>task.id !== id)
 
-        setTasks(currentTasks)
+        this.setState({tasks:currentTasks})
         }
 
-    const handleChangeColor = (color) => {
-        setColorSelected(color)
+    handleChangeColor = (color) => {
+        this.setState({ colorSelected: color})
     } 
 
+    render() {
+        const {colorSelected, tasks} = this.state
         return (
             <div>
                 <GlobalStyle></GlobalStyle>
                 <h1>Compra y venta</h1>
                 <FormTask
-                    handleChangeColor={handleChangeColor}
-                    handleSubmit={handleSubmit}
+                    handleChangeColor={this.handleChangeColor}
+                    handleSubmit={this.handleSubmit}
                     colorSelected={colorSelected}
                 ></FormTask>
-                {tasks.length===0 && <p>Not tasks yet</p>}
-                
+                <p>{this.state.colorSelected}</p>
+                {this.state.tasks.length===0 && <p>Not tasks yet</p>}
+                <div>
                     {
                         tasks.map(task =>(
                             <Task
@@ -84,14 +94,15 @@ const App = () => {
                                 done={task.done}
                                 title={task.title}
                                 color={task.color}
-                                handleCompleteTask={ () => handleCompleteTask(task.id) }
-                                handleDeleteTask={ () => handleDeleteTask(task.id)}
+                                handleCompleteTask={ () => this.handleCompleteTask(task.id) }
+                                handleDeleteTask={ () => this.handleDeleteTask(task.id)}
                             ></Task>
                         ))
                     }
-                
+                </div>
             </div>
         );
     }
+}
 
 export default App;
